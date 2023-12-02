@@ -1,5 +1,6 @@
 from django.db import models
 import datetime
+from django.urls import reverse
 
 # Create your models here.
 
@@ -27,6 +28,9 @@ class Category(models.Model):
     class Meta:
         verbose_name_plural = 'categories'
 
+    #def get_absolute_url(self):
+	    #return reverse('home')
+
 
 # All products
 class Product(models.Model):
@@ -36,8 +40,12 @@ class Product(models.Model):
     description = models.CharField(max_length=250, default='', blank=True, null=True)
     image = models.ImageField(upload_to='uploads/product/')
 
+    # For Product Sale 
+    is_sale = models.BooleanField(default=False)
+    sale_price = models.DecimalField(default=0, decimal_places=2, max_digits=6)
+
     def __str__(self):
-        return self.name
+        return f'{self.name} | {self.category}'
 
 
 class Order(models.Model):
