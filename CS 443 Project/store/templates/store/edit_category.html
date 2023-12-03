@@ -1,0 +1,70 @@
+{% extends "store/base.html" %}
+
+{% load static %}
+
+{% block content %}
+    <!-- Header-->
+    <header class="bg-dark py-5">
+        <div class="container px-4 px-lg-5 my-5">
+            <div class="text-center text-white">
+                <h1 class="display-4 fw-bolder">Categories List</h1>
+                <p class="lead fw-normal text-white-50 mb-0">View and Add Categories</p>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="row">
+            <center>
+                <div class="col-8">
+                    <br/><br/>
+
+                    <ul>
+                        {% for category in categories %}
+                            <form method="post" action="{% url 'edit_category' %}" style="display: inline-block;">
+                              {% csrf_token %}
+                              <input type="hidden" name="action" value="update">
+                              <input type="hidden" name="category_id" value="{{ category.id }}">
+                              <input type="text" name="name" value="{{ category.name }}" required>
+                              <button type="submit" class="btn btn-secondary">Update</button>
+                            </form>
+                            <form method="post" action="{% url 'edit_category' %}" style="display: inline-block;">
+                              {% csrf_token %}
+                              <input type="hidden" name="action" value="delete">
+                              <input type="hidden" name="category_id" value="{{ category.id }}">
+                              <button type="submit" class="btn btn-secondary">Delete</button>
+                            </form>
+                          <br/><br/>
+                        {% endfor %}
+                      </ul>
+                      
+                      <form method="post" action="{% url 'edit_category' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="add">
+                        <label for="name">Add Category:</label>
+                        <input type="text" name="name" required>
+                        <button type="submit" class="btn btn-secondary">Add</button>
+                      </form>
+
+                    <!--<form method="POST" action="">
+                        {% csrf_token %}
+                        {% for category in categories %}
+                            {{ category.name }}
+                            <br/>
+                        {% endfor %}
+                        <br/><br/>
+                        <label for="name">Category Name:</label>
+                        <input type="text" name="name" value="{% if category %}{{ category.name }}{% endif %}" required>
+                        <button type="submit" class="btn btn-secondary">Save</button>
+                    </form>-->
+                </div>
+            </center>
+        </div>
+    </div>
+    
+
+
+
+
+    <br/><br/><br/><br/>
+{% endblock %}

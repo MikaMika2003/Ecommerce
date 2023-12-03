@@ -8,8 +8,8 @@
                 <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'home' %}">Home</a></li>
                 <li class="nav-item"><a class="nav-link" href="{% url 'about' %}">About</a></li>
                 {% if user.is_superuser %}
-                    <li class="nav-item"><a class="nav-link" href="#!">Add Products</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#!">Add Categories</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#!">Edit Products</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'edit_category' %}">Edit Categories</a></li>
 
                 {% endif %}
 
@@ -37,11 +37,11 @@
 
             </ul>
             <form class="d-flex">
-                <button class="btn btn-outline-dark" type="submit">
+                <a href="{% url 'cart_summary' %}" class="btn btn-outline-dark">
                     <i class="bi-cart-fill me-1"></i>
                     Cart
                     <span class="badge bg-dark text-white ms-1 rounded-pill">0</span>
-                </button>
+                </a>
             </form>
         </div>
     </div>

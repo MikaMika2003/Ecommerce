@@ -1,4 +1,4 @@
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from .models import Product, Category
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
@@ -102,11 +102,48 @@ def category(request,  var):
         return redirect('home')
 
 
+def edit_category(request):
+    # Get list of categories
+    categories = Category.objects.all()
 
-def cart(request):
-    context = {}
-    return render(request, 'store/cart.html', context)
+    if request.method == 'POST':
+        action = request.POST.get('action', None)
+        if action == 'add':
+            name = request.POST.get('name', None)
+            if name:
+                Category.objects.create(name=name)
+        elif action == 'update':
+            category_id = request.POST.get('category_id', None)
+            name = request.POST.get('name', None)
+            if category_id and name:
+                category = get_object_or_404(Category, pk=category_id)
+                category.name = name
+                category.save()
+        elif action == 'delete':
+            category_id = request.POST.get('category_id', None)
+            if category_id:
+                category = get_object_or_404(Category, pk=category_id)
+                category.delete()
 
-def checkout(request):
+        messages.success(request, ("Changes have been made successfully."))
+        return redirect('edit_category')
+
+    '''if request.method == 'POST':
+        name = request.POST['name']
+        Category.objects.create(name=name)
+        return redirect('add_category')'''
+
+    context = {'categories': categories}
+    return render(request, 'store/edit_category.html', context)
+
+def update_category(request):
+    
+
     context = {}
-    return render(request, 'store/checkout.html', context)
+    return render(request, 'store/update_post.html', context)
+
+def delete_category(request):
+    
+
+    context = {}
+    return render(request, 'store/delete_post.html', context)
