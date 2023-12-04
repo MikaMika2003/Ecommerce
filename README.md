@@ -1,5 +1,5 @@
 # Ecommerce
-Make sure you have Python installed
+# Make sure you have Python installed
 Make sure you also have pip installed
 Ensure you have Django installed
 Run the virtual environment using the terminal: #project-folder-location\venv\Scripts\activate
