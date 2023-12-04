@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from django import forms
 
-from store.models import Customer, Wishlist
+from store.models import Customer, Product, Wishlist
 
 # Create your forms here
 
@@ -33,15 +33,11 @@ class SignUpForm(UserCreationForm):
 		self.fields['password2'].label = ''
 		self.fields['password2'].help_text = '<span class="form-text text-muted"><small>Enter the same password as before, for verification.</small></span>'
 
-
-'''class WishlistForm(forms.ModelForm):
-    class Meta:
-        model = Wishlist
-        fields = ['products']
-
-    def __init__(self, *args, **kwargs):
-        super(WishlistForm, self).__init__(*args, **kwargs)
-        self.fields['products'].widget.attrs['class'] = 'form-control'''
         
 class WishlistForm(forms.Form):
     product = forms.ModelChoiceField(queryset=Wishlist.objects.all(), empty_label=None)
+
+class ProductForm(forms.ModelForm):
+    class Meta:
+        model = Product
+        fields = ['name', 'price', 'category', 'description', 'image', 'is_sale', 'sale_price']

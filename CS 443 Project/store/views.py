@@ -4,7 +4,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
-from .forms import SignUpForm, WishlistForm
+from .forms import SignUpForm, WishlistForm, ProductForm
 from django import forms
 from django.contrib.auth.decorators import login_required
 
@@ -102,7 +102,7 @@ def category(request,  var):
         messages.success(request, ("That category does not exist."))
         return redirect('home')
 
-
+@login_required(login_url='home')
 def edit_category(request):
     # Get list of categories
     categories = Category.objects.all()
@@ -132,7 +132,62 @@ def edit_category(request):
     context = {'categories': categories}
     return render(request, 'store/edit_category.html', context)
 
-@login_required
+@login_required(login_url='home')
+def edit_product(request, product_id=None):
+    # Get list of categories for rendering the form
+    categories = Category.objects.all()
+    products = Product.objects.all()
+
+    if product_id:
+        # Editing an existing product
+        product = get_object_or_404(Product, pk=product_id)
+    else:
+        # Adding a new product
+        product = None
+
+    if request.method == 'POST':
+        form = ProductForm(request.POST, request.FILES, instance=product)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Product saved successfully.")
+            return redirect('edit_product')
+        else:
+            messages.error(request, "Error saving the product. Please check the form.")
+    else:
+        form = ProductForm(instance=product)
+
+    context = {'form': form, 'categories': categories, 'products': products}
+    return render(request, 'store/edit_product.html', context)
+
+@login_required(login_url='home')
+def update_product(request, product_id):
+    # Get the existing product to update
+    product = get_object_or_404(Product, pk=product_id)
+
+    if request.method == 'POST':
+        # Process the form data when the user submits the update form
+        form = ProductForm(request.POST, request.FILES, instance=product)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Product updated successfully.")
+            return redirect('edit_product')  # Redirect to the product list or wherever you want
+        else:
+            messages.error(request, "Error updating the product. Please check the form.")
+    else:
+        # Display the form to the user with the existing product data
+        form = ProductForm(instance=product)
+
+    context = {'form': form, 'product': product}
+    return render(request, 'store/update_product.html', context)
+
+@login_required(login_url='home')
+def delete_product(request, product_id):
+    product = get_object_or_404(Product, pk=product_id)
+    product.delete()
+    messages.success(request, "Product deleted successfully.")
+    return redirect('edit_product')
+
+@login_required(login_url='home')
 def wishlist(request):
     categories = Category.objects.all()
     wishlist, created = Wishlist.objects.get_or_create(user=request.user)
@@ -149,13 +204,13 @@ def wishlist(request):
     context = {'wishlist': wishlist, 'form': form, 'categories': categories}
     return render(request, 'store/wishlist.html', context)
 
-@login_required
+@login_required(login_url='home')
 def add_to_wishlist(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     product.add_to_wishlist(request.user)
     return redirect('wishlist')
 
-@login_required
+@login_required(login_url='home')
 def remove_from_wishlist(request, product_id):
     wishlist = Wishlist.objects.get(user=request.user)
     product = get_object_or_404(Product, id=product_id)
