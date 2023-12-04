@@ -1,11 +1,12 @@
 from django.shortcuts import get_object_or_404, redirect, render
-from .models import Product, Category
+from .models import Product, Category, Wishlist
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
-from .forms import SignUpForm
+from .forms import SignUpForm, WishlistForm
 from django import forms
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 
@@ -128,22 +129,35 @@ def edit_category(request):
         messages.success(request, ("Changes have been made successfully."))
         return redirect('edit_category')
 
-    '''if request.method == 'POST':
-        name = request.POST['name']
-        Category.objects.create(name=name)
-        return redirect('add_category')'''
-
     context = {'categories': categories}
     return render(request, 'store/edit_category.html', context)
 
-def update_category(request):
-    
+@login_required
+def wishlist(request):
+    categories = Category.objects.all()
+    wishlist, created = Wishlist.objects.get_or_create(user=request.user)
 
-    context = {}
-    return render(request, 'store/update_post.html', context)
+    if request.method == 'POST':
+        form = WishlistForm(request.POST)
+        if form.is_valid():
+            product = form.cleaned_data['product']
+            wishlist.products.add(product)
+            return redirect('wishlist')
+    else:
+        form = WishlistForm()
 
-def delete_category(request):
-    
+    context = {'wishlist': wishlist, 'form': form, 'categories': categories}
+    return render(request, 'store/wishlist.html', context)
 
-    context = {}
-    return render(request, 'store/delete_post.html', context)
+@login_required
+def add_to_wishlist(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    product.add_to_wishlist(request.user)
+    return redirect('wishlist')
+
+@login_required
+def remove_from_wishlist(request, product_id):
+    wishlist = Wishlist.objects.get(user=request.user)
+    product = get_object_or_404(Product, id=product_id)
+    wishlist.products.remove(product)
+    return redirect('wishlist')
