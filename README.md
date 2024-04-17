@@ -5,7 +5,7 @@
 
 -Ensure you have Django installed
 
--Run the virtual environment using the terminal: #project-folder-location\venv\Scripts\activate
+-Make sure the terminal is in the folder where venv is. Run the virtual environment using the terminal: venv\Scripts\activate
 
 -Run the server: python manage.py runserver
 
