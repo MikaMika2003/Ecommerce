@@ -9,5 +9,5 @@
 
 -Run the server: python manage.py runserver
 
--Now you should be able to view my Django website!!
+-Now you should be able to view my Ecommerce website!!
 
